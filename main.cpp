@@ -298,6 +298,9 @@ int main(void)
 
             ClearBackground(RAYWHITE);
             DrawRectangle(0, HUDSize, screenWidth, screenHeight-HUDSize, (Color){200,200,200,255});
+            //draw settings
+
+            
             //draw head and code
             int HeadWidth = 60;
             Vector2 FacePos = {screenWidth/2-HeadWidth/2, HUDSize/4};
@@ -305,7 +308,7 @@ int main(void)
             Color txtColors[8] = {BLUE, DARKGREEN, RED, DARKBLUE, DARKBROWN, GRAY, DARKGRAY, BLACK };
             if (gameState==1) {DrawTexture(facewin, FacePos.x, FacePos.y, WHITE);}
             else if (gameState==-1){DrawTexture(faceded, FacePos.x, FacePos.y, WHITE);}
-            else if (IsMouseButtonDown(MOUSE_BUTTON_LEFT) && validMouse) {DrawTexture(faceclick, FacePos.x, FacePos.y, WHITE);}
+            else if (IsMouseButtonDown(MOUSE_BUTTON_LEFT) && validMouse && playerMap[int(mPos.y)][int(mPos.x)] == 0) {DrawTexture(faceclick, FacePos.x, FacePos.y, WHITE);}
             else {DrawTexture(facenormal, FacePos.x, FacePos.y, WHITE);}
             //DrawRectangle(FacePos.x, FacePos.y, HeadWidth, HeadWidth, colors[gameState+1]);
             Vector2 mScrPos = GetMousePosition();
@@ -319,8 +322,11 @@ int main(void)
                 currGameTime = time(0) - gameStart;
             }
             
-            DrawRectangle(0, HUDSize/4, tileSize*4, tileSize, BLACK);
+            DrawRectangle(0, HUDSize/4, tileSize*3, tileSize, BLACK);
             DrawText(TextFormat("%i", int(currGameTime)), 4, HUDSize/4+2, tileSize, RED);
+
+            DrawRectangle(screenWidth-(tileSize*2), HUDSize/4, tileSize*2, tileSize, BLACK);
+            DrawText(TextFormat("%i", mineNum-flagNum), screenWidth-(tileSize*2)+4, HUDSize/4+2, tileSize, RED);
             
 
             for(int y=0; y<tileNumY ; y++){
@@ -337,14 +343,15 @@ int main(void)
                         tilecolor = (Color){240,240,240,255};
                     }
                     
+                    //highlight
                     if (mPos.x == x && mPos.y == y && playerMap[y][x] != -3 && playerMap[y][x] <= 0){
                         
                         tilecolor.r = clip(tilecolor.r - 50,0,255);
                         tilecolor.g = clip(tilecolor.g - 50,0,255);
                         tilecolor.b = clip(tilecolor.b - 50,0,255);
-                        if (IsMouseButtonDown(MOUSE_BUTTON_LEFT) && gameState == 0) {
-                        tilecolor = (Color){240,240,240,255};
-                        }
+                        if (IsMouseButtonDown(MOUSE_BUTTON_LEFT) && gameState == 0 && playerMap[y][x] != -1) {
+                            tilecolor = (Color){240,240,240,255};
+                            }
                         }
                     DrawRectangle(tX, tY, tileSize-2, tileSize-2, tilecolor);
 
