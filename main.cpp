@@ -1,4 +1,5 @@
 #include "raylib.h"
+#include "raygui.h"
 #include <iostream>
 #include <stdlib.h>
 #include <string>
@@ -13,6 +14,7 @@ int tileMap[tileNumY][tileNumX] = { 0 };
 int clicks = 0;
 int flags[tileNumX*tileNumY][2];
 int flagNum;
+int gameDifficulty = 0;
 double gameStart = 0;
 double currGameTime;
 void checkSurrounding(int (&plMap)[tileNumY][tileNumX], int tileMap[tileNumY][tileNumX], int chkX, int chkY){
@@ -138,6 +140,7 @@ void setMines(int (&tileMap)[tileNumY][tileNumX], int (&minePos)[mineNum][2]){
 }
 int main(void)
 {
+    bool showMessageBox;
     bool gameReset = true;
     //Font fontTtf = LoadFontEx("gontserrat/Gontserrat-Regular.ttf", 32, 0, 250);
     const int tileSize = 32;
@@ -294,13 +297,56 @@ int main(void)
         
 
         BeginDrawing();
-            
+            Vector2 mScrPos = GetMousePosition();
 
             ClearBackground(RAYWHITE);
+            
+            
+
+            if (gameState==2){
+                int offsetX = 16; int txtH =32; int txtGap = 48;
+                char modes[3][20] = {"Easy", "Intermediate", "Expert"};
+                Color clr = GRAY;
+                
+                for (int i=0;i<3;i++){
+                int y = txtH+i*txtGap;
+                if (gameDifficulty == i ){
+                    clr = DARKGRAY;
+                }
+                else if  (mScrPos.x > offsetX && mScrPos.y > y && mScrPos.y < y+txtGap) {
+                    clr = BLACK;
+                    if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
+                        //gameReset = true;
+                        bool showMessageBox = true;
+                        //if (GuiButton((Rectangle){ 24, 24, 120, 30 }, "#191#Show Message")) {showMessageBox = true;}
+
+                        
+                        //InitWindow(screenWidth, screenHeight+50, "raylib [audio] example - music playing (streaming)");
+                        //gameState=-1;
+                    }
+                }
+                else {clr = GRAY;}
+                DrawCircle(offsetX, y, 8, clr);
+                DrawText(TextFormat(modes[i]), offsetX*2, y-(txtH/2), txtH, clr);
+                if (showMessageBox)
+                        {
+                            int result = GuiMessageBox((Rectangle){ 85, 70, 250, 100 },
+                                "#191#Message Box", "Hi! This is a message!", "Nice;Cool");
+
+                            if (result >= 0) showMessageBox = false;
+                        }
+                }
+            }
+            else {
             DrawRectangle(0, HUDSize, screenWidth, screenHeight-HUDSize, (Color){200,200,200,255});
             //draw settings
-
-            
+            int sx = 0; int sy=0; int sh = 16; int sw = MeasureText("settings", sh);
+            DrawRectangle(sx, sy, sw, sh, (Color){200,200,200,255});
+            DrawText("settings", sx, sy, sh, BLACK);
+            if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && mScrPos.x >sx && mScrPos.x<sx+sw && mScrPos.y >sy && mScrPos.y<sy+sh){
+                gameState = 2;
+                //cout << "true" << endl;
+            }
             //draw head and code
             int HeadWidth = 60;
             Vector2 FacePos = {screenWidth/2-HeadWidth/2, HUDSize/4};
@@ -311,7 +357,7 @@ int main(void)
             else if (IsMouseButtonDown(MOUSE_BUTTON_LEFT) && validMouse && playerMap[int(mPos.y)][int(mPos.x)] == 0) {DrawTexture(faceclick, FacePos.x, FacePos.y, WHITE);}
             else {DrawTexture(facenormal, FacePos.x, FacePos.y, WHITE);}
             //DrawRectangle(FacePos.x, FacePos.y, HeadWidth, HeadWidth, colors[gameState+1]);
-            Vector2 mScrPos = GetMousePosition();
+            
             if (mScrPos.x > FacePos.x && mScrPos.y > FacePos.y && mScrPos.x < FacePos.x+HeadWidth && mScrPos.y < FacePos.y+HeadWidth && IsMouseButtonPressed(0)){
                 gameReset = true;
                 gameReset;
@@ -386,7 +432,7 @@ int main(void)
                     }
                     
                 }
-            }
+            }}
 
         EndDrawing();
     }
